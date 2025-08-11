@@ -46,24 +46,41 @@ export function InputForm() {
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    setIsSubmitting(true);
-    
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      toast.success('Login successful!', {
-        description: 'Welcome back! Redirecting you now...',
-      });
-      
-      console.log('Login data:', data);
-    } catch (error) {
-      toast.error('Login failed', {
-        description: 'Please check your credentials and try again.',
-      });
-    } finally {
-      setIsSubmitting(false);
+  setIsSubmitting(true);
+
+  try {
+    const res = await fetch("http://localhost:5000/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    const result = await res.json();
+
+    if (!res.ok) {
+      throw new Error(result.error || "Login failed");
     }
+
+    // Store user or token (if you add JWT later)
+    localStorage.setItem("user", JSON.stringify(result.user));
+
+    toast.success("Login successful!", {
+      description: "Welcome back! Redirecting you now...",
+    });
+
+    // Redirect to home or dashboard
+    window.location.href = "/";
+  } catch (error: any) {
+    toast.error("Login failed", {
+      description: error.message,
+    });
+  } finally {
+    setIsSubmitting(false);
   }
+}
+
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
