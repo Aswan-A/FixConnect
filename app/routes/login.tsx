@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Link } from 'react-router';
+import { PUBLIC_URL } from 'config.js';
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: 'Login' }];
@@ -23,12 +24,11 @@ export function meta({}: Route.MetaArgs) {
 
 const FormSchema = z.object({
   email: z
+    .string()
     .email({ message: 'Please enter a valid email address.' })
-    .min(1, { message: 'Email is required.' })
-    ,
+    .min(1, { message: 'Email is required.' }),
   password: z
     .string()
-    .min(1, { message: 'Password is required.' })
     .min(6, { message: 'Password must be at least 6 characters.' }),
 });
 
@@ -42,49 +42,40 @@ export function InputForm() {
       email: '',
       password: '',
     },
-    mode: 'onBlur', 
+    mode: 'onBlur',
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-  setIsSubmitting(true);
+    setIsSubmitting(true);
 
-  try {
-    const res = await fetch("http://localhost:5000/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
+    try {
+      const res = await fetch(`${PUBLIC_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
 
-    const result = await res.json();
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Login failed');
 
-    if (!res.ok) {
-      throw new Error(result.error || "Login failed");
+      // Store user info and tokens
+      localStorage.setItem('user', JSON.stringify(result.user));
+      localStorage.setItem('accessToken', result.tokens.accessToken);
+      localStorage.setItem('refreshToken', result.tokens.refreshToken);
+
+      toast.success('Login successful!', {
+        description: 'Welcome back! Redirecting you now...',
+      });
+
+      window.location.href = '/';
+    } catch (error: any) {
+      toast.error('Login failed', { description: error.message });
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // Store user or token (if you add JWT later)
-    localStorage.setItem("user", JSON.stringify(result.user));
-
-    toast.success("Login successful!", {
-      description: "Welcome back! Redirecting you now...",
-    });
-
-    // Redirect to home or dashboard
-    window.location.href = "/";
-  } catch (error: any) {
-    toast.error("Login failed", {
-      description: error.message,
-    });
-  } finally {
-    setIsSubmitting(false);
   }
-}
 
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
+  const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
   return (
     <Form {...form}>
@@ -107,20 +98,17 @@ export function InputForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Email address
-                </FormLabel>
+                <FormLabel>Email address</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
                     placeholder="Enter your email"
                     autoComplete="email"
                     disabled={isSubmitting}
-                    className="h-11 border-gray-300 bg-white text-gray-900 placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-400"
                     {...field}
                   />
                 </FormControl>
-                <FormMessage className="text-xs" />
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -130,9 +118,7 @@ export function InputForm() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Password
-                </FormLabel>
+                <FormLabel>Password</FormLabel>
                 <FormControl>
                   <div className="relative">
                     <Input
@@ -140,25 +126,20 @@ export function InputForm() {
                       placeholder="Enter your password"
                       autoComplete="current-password"
                       disabled={isSubmitting}
-                      className="h-11 border-gray-300 bg-white pr-12 text-gray-900 placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-400"
                       {...field}
                     />
                     <button
                       type="button"
                       onClick={togglePasswordVisibility}
                       disabled={isSubmitting}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none focus:text-gray-700 disabled:opacity-50 dark:text-gray-400 dark:hover:text-gray-300 dark:focus:text-gray-300"
+                      className="absolute right-3 top-1/2 -translate-y-1/2"
                       aria-label={showPassword ? 'Hide password' : 'Show password'}
                     >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
+                      {showPassword ? <EyeOff /> : <Eye />}
                     </button>
                   </div>
                 </FormControl>
-                <FormMessage className="text-xs" />
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -175,25 +156,14 @@ export function InputForm() {
           </label>
           <Link
             to="/forgot-password"
-            className="font-medium text-blue-600 hover:text-blue-500 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
+            className="font-medium text-blue-600 hover:text-blue-500 hover:underline dark:text-blue-400"
           >
             Forgot password?
           </Link>
         </div>
 
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-          className="w-full h-11 rounded-lg bg-blue-600 font-semibold text-white transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed dark:focus:ring-offset-gray-900"
-        >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Signing in...
-            </>
-          ) : (
-            'Sign in'
-          )}
+        <Button type="submit" disabled={isSubmitting} className="w-full h-11">
+          {isSubmitting ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : 'Sign in'}
         </Button>
       </form>
     </Form>
@@ -202,15 +172,12 @@ export function InputForm() {
 
 export default function LoginPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4 py-8 dark:from-gray-900 dark:to-gray-950">
+    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 px-4 py-8">
       <div className="w-full max-w-md space-y-6">
         <InputForm />
         <p className="text-center text-sm text-gray-600 dark:text-gray-400">
           Don't have an account?{' '}
-          <Link
-            to="/signup"
-            className="font-medium text-blue-600 transition-colors hover:text-blue-500 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
-          >
+          <Link to="/signup" className="font-medium text-blue-600 hover:text-blue-500 hover:underline dark:text-blue-400">
             Create account
           </Link>
         </p>

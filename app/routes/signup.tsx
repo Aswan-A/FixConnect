@@ -1,211 +1,123 @@
-import type { Route } from './+types/signup.tsx';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-import { z } from 'zod';
-import { useState } from 'react';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Link } from 'react-router';
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { PUBLIC_URL } from "config.js";
 
-export function meta({}: Route.MetaArgs) {
-  return [{ title: 'Sign Up' }];
-}
-
-const FormSchema = z.object({
-  name: z.string().min(1, { message: 'Name is required.' }),
-  email: z
+const schema = z.object({
+  name: z.string().min(1, "Name is required").max(50, "Name too long"),
+  email: z.string().email("Invalid email").min(1, "Email required"),
+  phoneNumber: z
     .string()
-    .email({ message: 'Please enter a valid email address.' })
-    .min(1, { message: 'Email is required.' }),
-  password: z
-    .string()
-    .min(6, { message: 'Password must be at least 6 characters.' }),
+    .min(10, "Phone number must be at least 10 digits")
+    .max(15, "Phone number must be at most 15 digits")
+    .regex(/^\d+$/, "Phone number must contain digits only"),
+  password: z.string().min(6, "Password too short").max(100, "Password too long"),
+  isPro: z.boolean().optional(),
+  profilePic: z.any().optional(),
 });
 
-export function SignupForm() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function Signup() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({ resolver: zodResolver(schema) });
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      name: '',
-      email: '',
-      password: '',
-    },
-    mode: 'onBlur',
-  });
-
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
-    setIsSubmitting(true);
-
+  async function onSubmit(values: any) {
     try {
-      const res = await fetch('http://localhost:5000/api/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
+      const formData = new FormData();
+      formData.append("name", values.name);
+      formData.append("email", values.email);
+      formData.append("phoneNumber", values.phoneNumber);
+      formData.append("password", values.password);
+      formData.append("isPro", values.isPro ? "true" : "false");
 
-      const result = await res.json();
-
-      if (!res.ok) {
-        throw new Error(result.error || 'Signup failed');
+      if (values.profilePic?.[0]) {
+        formData.append("profilePic", values.profilePic[0]);
       }
 
-      toast.success('Account created!', {
-        description: 'You can now log in.',
+      const res = await fetch(`${PUBLIC_URL}/api/auth/register`, {
+        method: "POST",
+        body: formData, // <-- multipart/form-data
       });
 
-      // Redirect to login
-      window.location.href = '/login';
-    } catch (error: any) {
-      toast.error('Signup failed', {
-        description: error.message,
-      });
-    } finally {
-      setIsSubmitting(false);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Signup failed");
+if (res.ok) {
+  localStorage.setItem("accessToken", data.tokens.accessToken);
+  localStorage.setItem("refreshToken", data.tokens.refreshToken);
+
+  alert("Account created successfully!");
+if (values.isPro) {
+  window.location.href = "/pro-register";
+} else {
+  window.location.href = "/dashboard";
+}
+
+}
+
+    } catch (e: any) {
+      alert(e.message);
     }
   }
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
   return (
-    <Form {...form}>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full max-w-md space-y-6 rounded-2xl border border-gray-200 bg-white p-8 shadow-xl dark:border-gray-700 dark:bg-gray-900"
+        onSubmit={handleSubmit(onSubmit)}
+        className="bg-white p-8 rounded shadow w-96 space-y-4"
       >
-        <div className="space-y-2 text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-            Create an account
-          </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Fill in your details to get started
-          </p>
+        <h2 className="text-2xl font-bold text-center">Create Account</h2>
+
+        <div>
+          <label>Name</label>
+          <input {...register("name")} className="w-full border p-2 rounded" />
+          {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
         </div>
 
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Name</FormLabel>
-              <FormControl>
-                <Input
-                  type="text"
-                  placeholder="Your full name"
-                  autoComplete="name"
-                  disabled={isSubmitting}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div>
+          <label>Email</label>
+          <input {...register("email")} className="w-full border p-2 rounded" />
+          {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+        </div>
 
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email address</FormLabel>
-              <FormControl>
-                <Input
-                  type="email"
-                  placeholder="Enter your email"
-                  autoComplete="email"
-                  disabled={isSubmitting}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+        <div>
+          <label>Phone</label>
+          <input {...register("phoneNumber")} className="w-full border p-2 rounded" />
+          {errors.phoneNumber && (
+            <p className="text-red-500 text-sm">{errors.phoneNumber.message}</p>
           )}
-        />
+        </div>
 
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Input
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Enter your password"
-                    autoComplete="new-password"
-                    disabled={isSubmitting}
-                    {...field}
-                  />
-                  <button
-                    type="button"
-                    onClick={togglePasswordVisibility}
-                    disabled={isSubmitting}
-                    className="absolute right-3 top-1/2 -translate-y-1/2"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div>
+          <label>Password</label>
+          <input type="password" {...register("password")} className="w-full border p-2 rounded" />
+          {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
+        </div>
 
-        <Button
+        <div>
+          <label>Profile Picture</label>
+          <input type="file" {...register("profilePic")} className="w-full" />
+        </div>
+
+        <div>
+          <label>
+            <input type="checkbox" {...register("isPro")} className="mr-2" /> Are you a Pro?
+          </label>
+        </div>
+
+        <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full h-11"
+          className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700"
         >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Creating account...
-            </>
-          ) : (
-            'Sign up'
-          )}
-        </Button>
-      </form>
-    </Form>
-  );
-}
+          {isSubmitting ? "Creating..." : "Sign Up"}
+        </button>
 
-export default function SignupPage() {
-  return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4 py-8 dark:from-gray-900 dark:to-gray-950">
-      <div className="w-full max-w-md space-y-6">
-        <SignupForm />
-        <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-          Already have an account?{' '}
-          <Link
-            to="/login"
-            className="font-medium text-blue-600 hover:underline"
-          >
-            Sign in
-          </Link>
+        <p className="text-center text-sm">
+          Already have an account? <a href="/login" className="text-blue-600">Login</a>
         </p>
-      </div>
-    </main>
+      </form>
+    </div>
   );
 }

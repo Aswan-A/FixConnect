@@ -1,17 +1,24 @@
-import { useEffect, useState } from 'react';
-import { Button } from '~/components/ui/button';
-import type { Route } from './+types/home';
-import { Link } from 'react-router';
+import { useEffect, useState } from "react";
+import { Button } from "~/components/ui/button";
+import type { Route } from "./+types/home";
+import { Link } from "react-router";
+import { PUBLIC_URL } from "config";
 
 type Issue = {
   _id: string;
   title: string;
   description: string;
   image?: string;
+  createdAt: string;
+  category?: string;
+  location: {
+    type: "Point";
+    coordinates: [number, number];
+  };
 };
 
 export function meta({}: Route.MetaArgs) {
-  return [{ title: 'Dashboard' }];
+  return [{ title: "Dashboard" }];
 }
 
 export default function Home() {
@@ -19,25 +26,40 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    console.log("Fetching issues...");
-    fetch('http://localhost:5000/api/issues')
-      .then(res => {
-        console.log("Response status:", res.status);
-        return res.json();
-      })
-      .then((data: Issue[]) => {
-        console.log("Fetched issues data:", data);
-        setIssues(data);
-        setIsLoading(false);
-      })
-      .catch(err => {
-        console.error('Error fetching issues:', err);
-        setIsLoading(false);
-      });
+    console.log("📡 Fetching issues...");
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          const radius = 10; // km
+
+fetch(
+  `${PUBLIC_URL}/api/issues?latitude=${latitude}&longitude=${longitude}&radius=${radius}`
+)
+  .then((res) => {
+    console.log("Response status:", res.status);
+    return res.json();
+  })
+  .then((data: Issue[]) => {
+    console.log("Fetched issues data:", data);
+    setIssues(data);
+    setIsLoading(false);
+  })
+  .catch((err) => {
+    console.error("❌ Error fetching issues:", err);
+    setIsLoading(false);
+  });
+        },
+      );
+    } else {
+      console.error("❌ Geolocation not supported in this browser");
+      setIsLoading(false);
+    }
   }, []);
 
   useEffect(() => {
-    console.log('📦 Current issues state:', issues);
+    console.log("📦 Current issues state:", issues);
   }, [issues]);
 
   return (
@@ -57,10 +79,10 @@ export default function Home() {
               Issues Dashboard
             </h1>
             <p className="text-slate-600 text-lg font-medium">
-              Discover and explore community issues
+              Discover and explore community issues near you
             </p>
           </div>
-          
+
           <Link to="/login">
             <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 font-semibold">
               Login
@@ -72,7 +94,10 @@ export default function Home() {
         {isLoading && (
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50">
+              <div
+                key={i}
+                className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50"
+              >
                 <div className="animate-pulse">
                   <div className="w-full h-48 bg-gray-200 rounded-xl mb-4"></div>
                   <div className="h-6 bg-gray-200 rounded-lg mb-2"></div>
@@ -85,7 +110,7 @@ export default function Home() {
         )}
 
         {/* Issues grid */}
-        {!isLoading && (
+        {!isLoading && issues.length > 0 && (
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {issues.map((issue, index) => (
               <div
@@ -93,7 +118,7 @@ export default function Home() {
                 className="group bg-white/70 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl border border-white/50 hover:border-white/80 transform hover:scale-[1.02] transition-all duration-500"
                 style={{
                   animationDelay: `${index * 100}ms`,
-                  animation: 'slideInUp 0.6s ease-out forwards'
+                  animation: "slideInUp 0.6s ease-out forwards",
                 }}
               >
                 {/* Image container */}
@@ -107,13 +132,21 @@ export default function Home() {
                   ) : (
                     <div className="w-full h-48 bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center">
                       <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-                        <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                        <svg
+                          className="w-8 h-8 text-white"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                            clipRule="evenodd"
+                          />
                         </svg>
                       </div>
                     </div>
                   )}
-                  
+
                   {/* Gradient overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
@@ -123,16 +156,26 @@ export default function Home() {
                   <h2 className="text-xl font-bold text-slate-800 group-hover:text-blue-700 transition-colors duration-300 leading-tight">
                     {issue.title}
                   </h2>
-                  
+
                   <p className="text-slate-600 leading-relaxed line-clamp-3">
                     {issue.description}
                   </p>
-                  
+
                   <Link to={`/issues/${issue._id}`}>
                     <Button className="w-full bg-gradient-to-r from-slate-700 to-slate-800 hover:from-blue-600 hover:to-indigo-600 text-white py-3 rounded-xl font-semibold shadow-md hover:shadow-lg transform hover:scale-[1.02] transition-all duration-300">
                       View Details
-                      <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      <svg
+                        className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
                       </svg>
                     </Button>
                   </Link>
@@ -146,17 +189,29 @@ export default function Home() {
         {!isLoading && issues.length === 0 && (
           <div className="text-center py-16">
             <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center">
-              <svg className="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              <svg
+                className="w-12 h-12 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-slate-800 mb-2">No Issues Found</h3>
-            <p className="text-slate-600">Check back later for new community issues.</p>
+            <h3 className="text-2xl font-bold text-slate-800 mb-2">
+              No Issues Found
+            </h3>
+            <p className="text-slate-600">
+              Check back later for new community issues.
+            </p>
           </div>
         )}
       </main>
-
-      
     </div>
   );
 }
