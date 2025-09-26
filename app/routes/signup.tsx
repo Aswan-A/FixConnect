@@ -51,7 +51,7 @@ if (res.ok) {
 if (values.isPro) {
   window.location.href = "/pro-register";
 } else {
-  window.location.href = "/dashboard";
+  window.location.href = "/";
 }
 
 }
