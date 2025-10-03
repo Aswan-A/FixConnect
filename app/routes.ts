@@ -8,4 +8,6 @@ export default [
   route('pro-register', 'routes/getpro.tsx'), // /pro-register
   route('login', 'routes/login.tsx'),    // /login
   route('signup', 'routes/signup.tsx'),  // /signup
+  route('issues/:issueId', 'routes/issuedetails.tsx'),  // <-- fix here
+
 ] satisfies RouteConfig;

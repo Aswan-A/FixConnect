@@ -157,7 +157,9 @@ export default function Home() {
   <div className="w-full h-48 bg-gray-300 flex items-center justify-center">
     No Image
   </div>
-)}
+)
+
+}
 
 
                 <div className="p-6 space-y-4">
@@ -166,8 +168,16 @@ export default function Home() {
                   </h2>
                   <p className="text-slate-600 line-clamp-3">{issue.description}</p>
                 </div>
+<Button
+  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl"
+  onClick={() => navigate(`/issues/${issue._id}`)}
+>
+  View Details
+</Button>
+
               </div>
-            ))}
+            ))
+            }
           </div>
         )}
 
