@@ -5,10 +5,11 @@ import { Link, useNavigate } from "react-router";
 import { PUBLIC_URL } from "config";
 
 type Issue = {
+  currentImageIndex: number;
   _id: string;
   title: string;
   description: string;
-  image?: string;
+  images?: string[];  // <-- multiple images
   createdAt: string;
   category?: string;
   location: {
@@ -100,17 +101,65 @@ export default function Home() {
                 key={issue._id}
                 className="group bg-white/70 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl border border-white/50 hover:border-white/80 transform hover:scale-[1.02] transition-all duration-500"
               >
-                {issue.image ? (
-                  <img
-                    src={issue.image}
-                    alt={issue.title}
-                    className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-700"
-                  />
-                ) : (
-                  <div className="w-full h-48 bg-gray-300 flex items-center justify-center">
-                    No Image
-                  </div>
-                )}
+                {issue.images && issue.images.length > 0 ? (
+  <div className="relative w-full h-48 overflow-hidden rounded">
+    {/* Current image */}
+    <img
+      src={issue.images[issue.currentImageIndex ?? 0]}
+      alt={issue.title}
+      className="w-full h-48 object-cover transition-transform duration-700"
+    />
+
+    {/* Navigation arrows */}
+    {issue.images.length > 1 && (
+      <>
+        <button
+          onClick={() =>
+            setIssues((prev) =>
+              prev.map((i) =>
+                i._id === issue._id
+                  ? {
+                      ...i,
+                      currentImageIndex:
+                        ((i.currentImageIndex ?? 0) - 1 + i.images!.length) %
+                        i.images!.length,
+                    }
+                  : i
+              )
+            )
+          }
+          className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 text-white p-1 rounded-full"
+        >
+          ◀
+        </button>
+        <button
+          onClick={() =>
+            setIssues((prev) =>
+              prev.map((i) =>
+                i._id === issue._id
+                  ? {
+                      ...i,
+                      currentImageIndex:
+                        ((i.currentImageIndex ?? 0) + 1) % i.images!.length,
+                    }
+                  : i
+              )
+            )
+          }
+          className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 text-white p-1 rounded-full"
+        >
+          ▶
+        </button>
+      </>
+    )}
+  </div>
+) : (
+  <div className="w-full h-48 bg-gray-300 flex items-center justify-center">
+    No Image
+  </div>
+)}
+
+
                 <div className="p-6 space-y-4">
                   <h2 className="text-xl font-bold text-slate-800">
                     {issue.title}

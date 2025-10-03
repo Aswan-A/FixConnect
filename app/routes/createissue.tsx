@@ -7,7 +7,7 @@ export default function CreateIssue() {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageFiles, setImageFiles] = useState<File[]>([]); // multiple files
   const [category, setCategory] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -31,30 +31,28 @@ export default function CreateIssue() {
           const token = localStorage.getItem("accessToken");
           if (!token) throw new Error("User not authenticated");
 
-          // Use FormData for file + text fields
           const formData = new FormData();
           formData.append("title", title);
           formData.append("description", description);
           formData.append("category", category);
           formData.append("latitude", latitude.toString());
           formData.append("longitude", longitude.toString());
-          if (imageFile) formData.append("image", imageFile); // Must match Multer field name
+
+          // Append multiple images
+          imageFiles.forEach((file) => formData.append("images", file));
 
           const res = await fetch(`${PUBLIC_URL}/api/issues`, {
             method: "POST",
             headers: {
-              Authorization: `Bearer ${token}`, // Only auth header
+              Authorization: `Bearer ${token}`, // only auth header
             },
             body: formData,
           });
 
           const data = await res.json();
+          if (!res.ok) throw new Error(data?.error || "Failed to create issue");
 
-          if (!res.ok) {
-            throw new Error(data?.error || "Failed to create issue");
-          }
-
-          navigate("/"); // Redirect after success
+          navigate("/"); // redirect after success
         } catch (err: any) {
           console.error(err);
           setError(err.message || "Something went wrong");
@@ -99,11 +97,26 @@ export default function CreateIssue() {
 
         <input
           type="file"
-          name="image" // Must match Multer field
+          name="images" // Must match backend field
           accept="image/*"
-          onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+          multiple
+          onChange={(e) => setImageFiles(Array.from(e.target.files || []))}
           className="w-full"
         />
+
+        {/* Preview selected images */}
+        {imageFiles.length > 0 && (
+          <div className="grid grid-cols-3 gap-2">
+            {imageFiles.map((file, idx) => (
+              <img
+                key={idx}
+                src={URL.createObjectURL(file)}
+                alt={`Preview ${idx}`}
+                className="w-full h-24 object-cover rounded"
+              />
+            ))}
+          </div>
+        )}
 
         <input
           type="text"

@@ -23,43 +23,46 @@ export default function Signup() {
     formState: { errors, isSubmitting },
   } = useForm({ resolver: zodResolver(schema) });
 
-  async function onSubmit(values: any) {
-    try {
-      const formData = new FormData();
-      formData.append("name", values.name);
-      formData.append("email", values.email);
-      formData.append("phoneNumber", values.phoneNumber);
-      formData.append("password", values.password);
-      formData.append("isPro", values.isPro ? "true" : "false");
+async function onSubmit(values: any) {
+  try {
+    const formData = new FormData();
 
-      if (values.profilePic?.[0]) {
-        formData.append("profilePic", values.profilePic[0]);
-      }
+    formData.append("name", values.name);
+    formData.append("email", values.email);
+    formData.append("phoneNumber", values.phoneNumber);
+    formData.append("password", values.password);
 
-      const res = await fetch(`${PUBLIC_URL}/api/auth/register`, {
-        method: "POST",
-        body: formData, // <-- multipart/form-data
-      });
+    // checkbox boolean → must be string, since FormData only supports strings/files
+    formData.append("isPro", values.isPro ? "true" : "false");
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Signup failed");
-if (res.ok) {
-  localStorage.setItem("accessToken", data.tokens.accessToken);
-  localStorage.setItem("refreshToken", data.tokens.refreshToken);
-
-  alert("Account created successfully!");
-if (values.isPro) {
-  window.location.href = "/pro-register";
-} else {
-  window.location.href = "/";
-}
-
-}
-
-    } catch (e: any) {
-      alert(e.message);
+    if (values.profilePic?.[0]) {
+      formData.append("profilePic", values.profilePic[0]); // file upload
     }
+
+    const res = await fetch(`${PUBLIC_URL}/api/auth/register`, {
+      method: "POST",
+      body: formData, // 🔥 Do NOT set Content-Type, browser sets it automatically
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || data.message || "Signup failed");
+
+    // Save tokens
+    localStorage.setItem("accessToken", data.tokens.accessToken);
+    localStorage.setItem("refreshToken", data.tokens.refreshToken);
+
+    alert("Account created successfully!");
+
+    if (values.isPro) {
+      window.location.href = "/pro-register";
+    } else {
+      window.location.href = "/";
+    }
+  } catch (e: any) {
+    alert(e.message);
   }
+}
+
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
