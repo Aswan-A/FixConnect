@@ -17,6 +17,10 @@ type Issue = {
 export default function IssueDetails() {
   const { issueId } = useParams<{ issueId: string }>();
   const navigate = useNavigate();
+
+  console.log("IssueDetails component mounted");
+  console.log("useParams:", { issueId });
+  
   const [issue, setIssue] = useState<Issue | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -26,18 +30,27 @@ export default function IssueDetails() {
   useEffect(() => {
     if (!issueId) return;
 
-    fetch(`${PUBLIC_URL}/api/issues/${issueId}`)
-      .then((res) => res.json())
+    const url = `${PUBLIC_URL}/api/issues/${issueId}`;
+    console.log("Fetching issue from URL:", url);
+
+    fetch(url)
+      .then((res) => {
+        console.log("Response status:", res.status);
+        return res.json();
+      })
       .then((data: Issue) => {
+        console.log("Data received:", data);
         setIssue(data);
         setIsLoading(false);
       })
       .catch((err) => {
-        console.error(err);
+        console.error("Fetch error:", err);
         setError("Failed to fetch issue details");
         setIsLoading(false);
       });
   }, [issueId]);
+
+
 
   const handleRequest = async () => {
     setIsRequesting(true);
