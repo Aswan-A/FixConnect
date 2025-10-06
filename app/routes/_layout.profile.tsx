@@ -40,7 +40,7 @@ export default function UserProfile() {
         });
 
         if (!res.ok) {
-          const text = await res.text(); // show actual error
+          const text = await res.text();
           throw new Error(`Failed to fetch profile: ${text}`);
         }
 
@@ -63,35 +63,41 @@ export default function UserProfile() {
   if (!user) return <p className="p-6 text-center">User not found.</p>;
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-lg mt-8 space-y-6">
-      {/* User Info */}
-      <div className="flex items-center space-x-4">
-        {user.profilePic && (
-          <img
-            src={user.profilePic}
-            alt={user.name}
-            className="w-24 h-24 rounded-full object-cover"
-          />
-        )}
-        <div>
-          <h1 className="text-2xl font-bold">{user.name}</h1>
-          <p className="text-gray-600">{user.email}</p>
-          {user.phoneNumber && <p>Phone: {user.phoneNumber}</p>}
-          {user.isPro && <p className="text-green-600 font-semibold">Pro User</p>}
-        </div>
-      </div>
+    <div className="space-y-6">
+  
+      
 
-      {/* ProUser Info */}
-      {proUser && (
-        <div className="p-4 bg-gray-50 rounded-lg space-y-2">
-          <h2 className="text-xl font-semibold mb-2">Pro User Info</h2>
-          {proUser.occupation && <p>Occupation: {proUser.occupation}</p>}
-          {proUser.skill && <p>Skills: {proUser.skill.join(", ")}</p>}
-          {proUser.Degree && <p>Degree: {proUser.Degree}</p>}
-          {proUser.certifications && <p>Certifications: {proUser.certifications.join(", ")}</p>}
-          {proUser.description && <p>Description: {proUser.description}</p>}
+      {/* Profile Content */}
+      <div className="max-w-3xl p-6 bg-white rounded-xl shadow-lg space-y-6">
+        {/* User Info */}
+        <div className="flex items-center space-x-4">
+          {user.profilePic && (
+            <img
+              src={user.profilePic}
+              alt={user.name}
+              className="w-24 h-24 rounded-full object-cover"
+            />
+          )}
+          <div>
+            <h2 className="text-2xl font-bold">{user.name}</h2>
+            <p className="text-gray-600">{user.email}</p>
+            {user.phoneNumber && <p>Phone: {user.phoneNumber}</p>}
+            {user.isPro && <p className="text-green-600 font-semibold">Pro User</p>}
+          </div>
         </div>
-      )}
+
+        {/* ProUser Info */}
+        {proUser && (
+          <div className="p-4 bg-gray-50 rounded-lg space-y-2">
+            <h3 className="text-xl font-semibold mb-2">Pro User Info</h3>
+            {proUser.occupation && <p>Occupation: {proUser.occupation}</p>}
+            {proUser.skill && <p>Skills: {proUser.skill.join(", ")}</p>}
+            {proUser.Degree && <p>Degree: {proUser.Degree}</p>}
+            {proUser.certifications && <p>Certifications: {proUser.certifications.join(", ")}</p>}
+            {proUser.description && <p>Description: {proUser.description}</p>}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
