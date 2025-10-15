@@ -3,6 +3,8 @@ import { Button } from "~/components/ui/button";
 import { useNavigate } from "react-router";
 import Layout from "./_layout";
 import { PUBLIC_URL } from "config";
+import { AspectRatio } from "@radix-ui/react-aspect-ratio";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card";
 
 type Issue = {
   currentImageIndex: number;
@@ -44,52 +46,62 @@ export default function Home() {
     });
   }, []);
 
-  return (<div>
-      {isLoading && <p>Loading issues...</p>}
+  return (
+  <div>
+    {isLoading && <p>Loading issues...</p>}
 
-      {!isLoading && issues.length > 0 && (
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {issues.map((issue) => (
-            <div
-              key={issue._id}
-              className="group bg-white/70 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl border border-white/50 hover:border-white/80 transform hover:scale-[1.02] transition-all duration-500"
-            >
-              {issue.images && issue.images.length > 0 ? (
-                <div className="relative w-full h-48 overflow-hidden rounded">
-                  <img
-                    src={issue.images[issue.currentImageIndex ?? 0]}
-                    alt={issue.title}
-                    className="w-full h-48 object-cover transition-transform duration-700"
-                  />
-                </div>
-              ) : (
-                <div className="w-full h-48 bg-gray-300 flex items-center justify-center">
-                  No Image
-                </div>
-              )}
+    {!isLoading && issues.length > 0 && (
+      <div className="grid grid-cols-1 gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
 
-              <div className="p-6 space-y-4">
-                <h2 className="text-xl font-bold text-slate-800">{issue.title}</h2>
-                <p className="text-slate-600 line-clamp-3">{issue.description}</p>
-              </div>
+        {issues.map((issue) => (
+          <Card
+  key={issue._id}
+  className="group rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-[var(--border)]/50 hover:border-[var(--border)]/80 hover:scale-[1.02] bg-[var(--card)]/70 backdrop-blur-sm"
+>
+  <CardHeader className="p-0">
+    {issue.images && issue.images.length > 0 ? (
+      <AspectRatio ratio={16 / 9}>
+        <img
+          src={issue.images[issue.currentImageIndex ?? 0]}
+          alt={issue.title}
+          className="w-full h-full object-cover rounded-t-2xl transition-transform duration-700 group-hover:scale-105"
+        />
+      </AspectRatio>
+    ) : (
+      <div className="w-full h-48 bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)]">
+        No Image
+      </div>
+    )}
+  </CardHeader>
 
-              <Button
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl"
-                onClick={() => navigate(`/issues/${issue._id}`)}
-              >
-                View Details
-              </Button>
-            </div>
-          ))}
-        </div>
-      )}
+  <CardContent className="p-6 space-y-3">
+    <CardTitle className="text-xl text-[var(--card-foreground)]">{issue.title}</CardTitle>
+    <CardDescription className="text-[var(--foreground)] line-clamp-3">
+      {issue.description}
+    </CardDescription>
+  </CardContent>
 
-      {!isLoading && issues.length === 0 && (
-        <div className="text-center py-16">
-          <h3 className="text-2xl font-bold text-slate-800 mb-2">No Issues Found</h3>
-          <p className="text-slate-600">Check back later for new community issues.</p>
-        </div>
-      )}
+  <CardFooter className="p-6 pt-0 flex justify-center">
+    <Button
+      onClick={() => navigate(`/issues/${issue._id}`)}
+      className="text-[var(--primary-foreground)] border border-[var(--primary)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)]"
+    >
+      View Details
+    </Button>
+  </CardFooter>
+</Card>
+
+        ))}
+      </div>
+    )}
+
+    {!isLoading && issues.length === 0 && (
+      <div className="text-center py-16">
+  <h3 className="text-2xl font-bold text-[var(--card-foreground)] mb-2">No Issues Found</h3>
+  <p className="text-[var(--foreground)]">Check back later for new community issues.</p>
+</div>
+
+    )}
   </div>
-  );
+)
 }

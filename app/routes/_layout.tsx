@@ -5,34 +5,34 @@ export default function Layout() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)]">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-white/40 shadow-sm">
+      <header className="bg-[var(--card)]/80 backdrop-blur-sm border-b border-[var(--border)]/40 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <Link
             to="/"
-            className="text-2xl font-extrabold bg-gradient-to-r from-blue-700 to-indigo-700 bg-clip-text text-transparent"
+            className="text-2xl font-extrabold bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] bg-clip-text text-transparent"
           >
             FixConnect
           </Link>
 
           <nav className="flex items-center gap-4">
             <Button
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl"
               onClick={() => navigate("/createissue")}
+              className="bg-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)]"
             >
               Create Issue
             </Button>
 
             <Button
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl"
               onClick={() => navigate("/profile")}
+              className="bg-[var(--secondary)] text-[var(--secondary-foreground)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)]"
             >
               Profile
             </Button>
 
             <Link to="/login">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl">
+              <Button className="bg-[var(--muted)] text-[var(--muted-foreground)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)]">
                 Login
               </Button>
             </Link>
@@ -46,7 +46,7 @@ export default function Layout() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white/70 text-center py-4 border-t border-white/50 text-slate-600 text-sm">
+      <footer className="bg-[var(--card)]/70 text-center py-4 border-t border-[var(--border)]/50 text-[var(--foreground)] text-sm">
         © {new Date().getFullYear()} FixConnect — Empowering Communities
       </footer>
     </div>
