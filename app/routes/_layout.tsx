@@ -13,7 +13,7 @@ export default function Layout() {
             to="/"
             className="text-2xl font-extrabold bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] bg-clip-text text-transparent"
           >
-            FixConnect
+            Reparo
           </Link>
 
           <nav className="flex items-center gap-4">
@@ -47,7 +47,7 @@ export default function Layout() {
 
       {/* Footer */}
       <footer className="bg-[var(--card)]/70 text-center py-4 border-t border-[var(--border)]/50 text-[var(--foreground)] text-sm">
-        © {new Date().getFullYear()} FixConnect — Empowering Communities
+        © {new Date().getFullYear()} Reparo — Empowering Communities
       </footer>
     </div>
   );

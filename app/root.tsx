@@ -3,7 +3,7 @@ import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 import "./app.css";
 
 export function meta() {
-  return [{ title: "FixConnect" }];
+  return [{ title: "Reparo" }];
 }
 
 export default function Root() {
