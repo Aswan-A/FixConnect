@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ChevronLeft, ChevronRight, MapPin, Calendar, User, Tag, Loader2 } from 'lucide-react';
 
-// Replace with your actual PUBLIC_URL
 import { PUBLIC_URL } from 'config.js';
 
 type Issue = {

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { useNavigate } from "react-router";
-import Layout from "./_layout";
 import { PUBLIC_URL } from "config";
 import { AspectRatio } from "@radix-ui/react-aspect-ratio";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card";
@@ -23,15 +22,18 @@ export default function Home() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!navigator.geolocation) {
-      console.error("❌ Geolocation not supported");
-      setIsLoading(false);
-      return;
-    }
+  if (!navigator.geolocation) {
+    console.error("Geolocation not supported");
+    setIsLoading(false);
+    return;
+  }
 
-    navigator.geolocation.getCurrentPosition((position) => {
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
       const { latitude, longitude } = position.coords;
       const radius = 10;
+
+      console.log("Location:", latitude, longitude);
 
       fetch(`${PUBLIC_URL}/api/issues?latitude=${latitude}&longitude=${longitude}&radius=${radius}`)
         .then((res) => res.json())
@@ -40,11 +42,22 @@ export default function Home() {
           setIsLoading(false);
         })
         .catch((err) => {
-          console.error("❌ Error fetching issues:", err);
+          console.error("Error fetching issues:", err);
           setIsLoading(false);
         });
-    });
-  }, []);
+    },
+    (error) => {
+      console.error("Geolocation error:", error);
+      setIsLoading(false);
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0,
+    }
+  );
+}, []);
+
 
   return (
   <div>
