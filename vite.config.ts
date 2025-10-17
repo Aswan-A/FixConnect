@@ -6,8 +6,9 @@ import fs from 'fs';
 import path from 'path';
 
 function getHttpsConfig() {
-  const certPath = path.resolve('./.cert/cert.pem');
-  const keyPath = path.resolve('./.cert/key.pem');
+  const certDir = path.resolve(__dirname, '../certs');
+  const certPath = path.join(certDir, 'dev-local.pem');
+  const keyPath = path.join(certDir, 'dev-local-key.pem');
 
   if (fs.existsSync(certPath) && fs.existsSync(keyPath)) {
     return {
@@ -15,7 +16,7 @@ function getHttpsConfig() {
       cert: fs.readFileSync(certPath),
     };
   }
-  return undefined; // Correct fallback type
+  return undefined; 
 }
 
 export default defineConfig({
@@ -23,6 +24,7 @@ export default defineConfig({
     middlewareMode: false,
     fs: { strict: false },
     https: getHttpsConfig(),
+    host: '0.0.0.0', 
   },
   plugins: [
     tailwindcss(),
