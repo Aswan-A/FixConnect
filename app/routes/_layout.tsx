@@ -1,8 +1,11 @@
-import { Outlet, Link, useNavigate } from "react-router";
-import { Button } from "~/components/ui/button";
+import { Outlet, Link, useNavigate } from 'react-router';
+import { Button } from '~/components/ui/button';
+import { useAuth } from '~/hooks/useAuth';
+import { UserDropdown } from '~/components/UserDropdown';
 
 export default function Layout() {
   const navigate = useNavigate();
+  const { user, isLoading, logout } = useAuth();
 
   return (
     <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)]">
@@ -17,25 +20,26 @@ export default function Layout() {
           </Link>
 
           <nav className="flex items-center gap-4">
-            <Button
-              onClick={() => navigate("/createissue")}
-              className="bg-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)]"
-            >
-              Create Issue
-            </Button>
-
-            <Button
-              onClick={() => navigate("/profile")}
-              className="bg-[var(--secondary)] text-[var(--secondary-foreground)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)]"
-            >
-              Profile
-            </Button>
-
-            <Link to="/login">
-              <Button className="bg-[var(--muted)] text-[var(--muted-foreground)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)]">
-                Login
+            {user && (
+              <Button
+                onClick={() => navigate('/createissue')}
+                className="bg-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)]"
+              >
+                Create Issue
               </Button>
-            </Link>
+            )}
+
+            {isLoading ? (
+              <div className="h-10 w-10 rounded-full bg-[var(--muted)] animate-pulse" />
+            ) : user ? (
+              <UserDropdown user={user} onLogout={logout} />
+            ) : (
+              <Link to="/login">
+                <Button className="bg-[var(--muted)] text-[var(--muted-foreground)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)]">
+                  Login
+                </Button>
+              </Link>
+            )}
           </nav>
         </div>
       </header>
