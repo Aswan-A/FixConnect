@@ -81,30 +81,33 @@ export function InputForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full max-w-md space-y-6 rounded-2xl border border-gray-200 bg-white p-8 shadow-xl dark:border-gray-700 dark:bg-gray-900"
+        className="w-full max-w-md space-y-6 rounded-2xl border border-border bg-card p-8 shadow-xl transition-colors"
       >
+        {/* Heading */}
         <div className="space-y-2 text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
             Welcome back
           </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-sm text-muted-foreground">
             Enter your credentials to access your account
           </p>
         </div>
 
+        {/* Input fields */}
         <div className="space-y-4">
           <FormField
             control={form.control}
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email address</FormLabel>
+                <FormLabel className="text-foreground">Email address</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
                     placeholder="Enter your email"
                     autoComplete="email"
                     disabled={isSubmitting}
+                    className="bg-background border-input text-foreground placeholder:text-muted-foreground"
                     {...field}
                   />
                 </FormControl>
@@ -118,7 +121,7 @@ export function InputForm() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel className="text-foreground">Password</FormLabel>
                 <FormControl>
                   <div className="relative">
                     <Input
@@ -126,13 +129,14 @@ export function InputForm() {
                       placeholder="Enter your password"
                       autoComplete="current-password"
                       disabled={isSubmitting}
+                      className="bg-background border-input text-foreground placeholder:text-muted-foreground"
                       {...field}
                     />
                     <button
                       type="button"
                       onClick={togglePasswordVisibility}
                       disabled={isSubmitting}
-                      className="absolute right-3 top-1/2 -translate-y-1/2"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                       aria-label={showPassword ? 'Hide password' : 'Show password'}
                     >
                       {showPassword ? <EyeOff /> : <Eye />}
@@ -145,24 +149,26 @@ export function InputForm() {
           />
         </div>
 
+        {/* Remember me + Forgot password */}
         <div className="flex items-center justify-between text-sm">
           <label className="flex items-center space-x-2 cursor-pointer">
             <input
               type="checkbox"
-              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+              className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
               disabled={isSubmitting}
             />
-            <span className="text-gray-600 dark:text-gray-400">Remember me</span>
+            <span className="text-muted-foreground">Remember me</span>
           </label>
           <Link
             to="/forgot-password"
-            className="font-medium text-blue-600 hover:text-blue-500 hover:underline dark:text-blue-400"
+            className="font-medium text-primary hover:underline"
           >
             Forgot password?
           </Link>
         </div>
 
-        <Button type="submit" disabled={isSubmitting} className="w-full h-11">
+        {/* Submit button */}
+        <Button type="submit" disabled={isSubmitting} className="w-full h-11 bg-primary text-primary-foreground hover:bg-primary/90">
           {isSubmitting ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : 'Sign in'}
         </Button>
       </form>
@@ -172,12 +178,12 @@ export function InputForm() {
 
 export default function LoginPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 px-4 py-8">
+    <main className="flex min-h-screen items-center justify-center bg-background text-foreground transition-colors px-4 py-8">
       <div className="w-full max-w-md space-y-6">
         <InputForm />
-        <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-center text-sm text-muted-foreground">
           Don't have an account?{' '}
-          <Link to="/signup" className="font-medium text-blue-600 hover:text-blue-500 hover:underline dark:text-blue-400">
+          <Link to="/signup" className="font-medium text-primary hover:underline">
             Create account
           </Link>
         </p>
