@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ChevronLeft, ChevronRight, MapPin, Calendar, User, Tag, Loader2 } from 'lucide-react';
 
-// Replace with your actual PUBLIC_URL
 import { PUBLIC_URL } from 'config.js';
 
 type Issue = {
@@ -53,7 +52,7 @@ export default function IssueDetails() {
     setIsRequesting(true);
     setError('');
     try {
-      const token = sessionStorage.getItem('accessToken') || '';
+      const token = localStorage.getItem('accessToken') || '';
       if (!token) throw new Error('User not authenticated');
 
       const res = await fetch(`${PUBLIC_URL}/api/issues/${issueId}/request`, {
