@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { LogOut, User as UserIcon } from 'lucide-react';
+import { Bug, LogOut, User as UserIcon } from 'lucide-react';
 
 type User = {
   profilePic?: string;
@@ -37,7 +37,10 @@ export function UserDropdown({ user, onLogout }: UserDropdownProps) {
     setIsOpen(false);
     navigate('/profile');
   };
-
+  const handlemy_IssuesClick = () => {
+    setIsOpen(false);
+    navigate('/my_Issues');
+  };
   const handleLogoutClick = () => {
     setIsOpen(false);
     onLogout();
@@ -80,7 +83,13 @@ export function UserDropdown({ user, onLogout }: UserDropdownProps) {
             <UserIcon className="h-4 w-4" />
             Profile
           </button>
-
+          <button
+            onClick={handlemy_IssuesClick}
+            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-[var(--foreground)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)] transition-colors"
+          >
+            <Bug className="h-4 w-4" />
+            My Issues
+          </button>
           <button
             onClick={handleLogoutClick}
             className="w-full flex items-center gap-2 px-4 py-2 text-sm text-[var(--destructive)] hover:bg-[var(--destructive)]/10 transition-colors"
