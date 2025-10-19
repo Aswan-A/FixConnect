@@ -10,7 +10,7 @@ export default function Layout() {
   return (
     <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)]">
       {/* Header */}
-      <header className="bg-[var(--card)]/80 backdrop-blur-sm border-b border-[var(--border)]/40 shadow-sm">
+<header className="relative z-50 bg-[var(--card)]/80 backdrop-blur-sm border-b border-[var(--border)]/40 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <Link
             to="/"
