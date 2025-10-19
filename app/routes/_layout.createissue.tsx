@@ -151,10 +151,10 @@ export default function CreateIssue() {
                   <SelectValue placeholder="Choose category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="bug">Bug</SelectItem>
-                  <SelectItem value="maintenance">Maintenance</SelectItem>
-                  <SelectItem value="request">Request</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
+                  <SelectItem value="Electronics">Electronics</SelectItem>
+                  <SelectItem value="Electrical">Electrical</SelectItem>
+                  <SelectItem value="Plumbing">Plumbing</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
                 </SelectContent>
               </Select>
             </div>
