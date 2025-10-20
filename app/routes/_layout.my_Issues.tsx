@@ -101,17 +101,16 @@ export default function Home() {
 
               <CardFooter className="p-6 pt-0 flex justify-center">
                 <Button
-                  onClick={() => navigate(`/issues/${issue._id}`)}
+                  onClick={() => navigate(`/issues/my/requests/${issue._id}`)}
                   className="text-[var(--primary-foreground)] border border-[var(--primary)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)]"
                 >
-                  View Details
+                  View Requests
                 </Button>
               </CardFooter>
             </Card>
           ))}
         </div>
       )}
-
       {!isLoading && !error && issues.length === 0 && (
         <div className="text-center py-16">
           <h3 className="text-2xl font-bold text-[var(--card-foreground)] mb-2">
