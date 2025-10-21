@@ -61,6 +61,7 @@ export default function CreateIssue() {
           const res = await fetch(`${PUBLIC_URL}/api/issues`, {
             method: "POST",
             headers: { Authorization: `Bearer ${token}` },
+            
             body: formData,
           });
 
