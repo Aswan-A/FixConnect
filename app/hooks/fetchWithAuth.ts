@@ -49,7 +49,6 @@ export async function fetchWithAuth(
       console.error('Token refresh failed:', refreshErr);
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
-      window.location.href = '/login';
       throw refreshErr;
     }
   }

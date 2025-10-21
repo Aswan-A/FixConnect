@@ -21,6 +21,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { PUBLIC_URL } from "config";
+import { fetchWithAuth } from "~/hooks/fetchWithAuth";
 
 export default function CreateIssue() {
   const navigate = useNavigate();
@@ -58,10 +59,9 @@ export default function CreateIssue() {
           formData.append("longitude", longitude.toString());
           imageFiles.forEach((file) => formData.append("images", file));
 
-          const res = await fetch(`${PUBLIC_URL}/api/issues`, {
+
+          const res = await fetchWithAuth(`${PUBLIC_URL}/api/issues`, {
             method: "POST",
-            headers: { Authorization: `Bearer ${token}` },
-            
             body: formData,
           });
 
