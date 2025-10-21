@@ -1,7 +1,7 @@
 import { Outlet, Link, useNavigate } from 'react-router';
 import { Button } from '~/components/ui/button';
-import { useAuth } from '~/hooks/useAuth';
 import { UserDropdown } from '~/components/UserDropdown';
+import { fetchWithAuth, useAuth } from '~/hooks/fetchWithAuth';
 
 export default function Layout() {
   const navigate = useNavigate();

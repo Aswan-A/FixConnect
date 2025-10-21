@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { PUBLIC_URL } from "config";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "~/components/ui/carousel";
+import { fetchWithAuth } from "~/hooks/fetchWithAuth";
 
 type User = {
   _id: string;
@@ -31,14 +32,8 @@ export default function UserProfile() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const token = localStorage.getItem("accessToken");
-        if (!token) throw new Error("User not authenticated");
+        const res = await fetchWithAuth(`${PUBLIC_URL}/api/profile/me`);
 
-        const res = await fetch(`${PUBLIC_URL}/api/profile/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
 
         if (!res.ok) {
           const text = await res.text();
