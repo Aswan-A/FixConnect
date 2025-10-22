@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { PUBLIC_URL } from "config";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "~/components/ui/carousel";
+import { fetchWithAuth } from "~/hooks/fetchWithAuth";
 
 type User = {
   _id: string;
@@ -30,14 +32,8 @@ export default function UserProfile() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const token = localStorage.getItem("accessToken");
-        if (!token) throw new Error("User not authenticated");
+        const res = await fetchWithAuth(`${PUBLIC_URL}/api/profile/me`);
 
-        const res = await fetch(`${PUBLIC_URL}/api/profile/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
 
         if (!res.ok) {
           const text = await res.text();
@@ -93,7 +89,43 @@ export default function UserProfile() {
             {proUser.occupation && <p>Occupation: {proUser.occupation}</p>}
             {proUser.skill && <p>Skills: {proUser.skill.join(", ")}</p>}
             {proUser.Degree && <p>Degree: {proUser.Degree}</p>}
-            {proUser.certifications && <p>Certifications: {proUser.certifications.join(", ")}</p>}
+            {proUser.certifications && proUser.certifications.length > 0 && (
+              <div>
+                <p className="font-medium mb-2">Certifications:</p>
+
+                <Carousel className="w-full max-w-xl">
+                  <CarouselContent>
+                    {proUser.certifications.map((cert, index) => {
+                      const isPdf = cert.toLowerCase().endsWith(".pdf")
+
+                      return (
+                        <CarouselItem key={index}>
+                          <div className="p-2 border rounded-lg bg-white flex justify-center items-center">
+                            {isPdf ? (
+                              <embed
+                                src={cert}
+                                type="application/pdf"
+                                width="100%"
+                                height="400px"
+                                className="rounded-lg border border-gray-300"
+                              />
+                            ) : (
+                              <img
+                                src={cert}
+                                alt={`Certification ${index + 1}`}
+                                className="rounded-lg border border-gray-300 w-full h-[400px] object-contain"
+                              />
+                            )}
+                          </div>
+                        </CarouselItem>
+                      )
+                    })}
+                  </CarouselContent>
+                  <CarouselPrevious />
+                  <CarouselNext />
+                </Carousel>
+              </div>
+            )}
             {proUser.description && <p>Description: {proUser.description}</p>}
           </div>
         )}
