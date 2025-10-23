@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { PUBLIC_URL } from "config";
 import { Button } from "~/components/ui/button";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "~/components/ui/carousel";
 import {
   Card,
   CardHeader,
@@ -311,37 +312,25 @@ export default function IssueRequests() {
 
                 {/* content */}
                 <div className="p-6 overflow-auto h-[calc(100%-72px)]">
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="flex flex-col lg:flex-row gap-6 h-full">
                     {/* left: visual + basic info */}
-                    <div className="space-y-4">
-                      <div className="relative">
-                        <div className="rounded-2xl overflow-hidden">
-                          <AspectRatio ratio={4 / 3}>
-                            {expandedUser.profilePic ? (
-                              <img
-                                src={expandedUser.profilePic}
-                                alt={expandedUser.name}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="flex items-center justify-center h-full bg-[var(--muted)] text-[var(--muted-foreground)]">
-                                No Image
-                              </div>
-                            )}
-                          </AspectRatio>
-
-                          {/* glass overlay effect: grows when isExpanding true */}
-                          <motion.div
-                            initial={{ opacity: 0.0, scale: 1 }}
-                            animate={{
-                              opacity: isExpanding ? 0.20 : 0.08,
-                              scale: isExpanding ? 1.03 : 1,
-                            }}
-                            transition={{ duration: 0.28 }}
-                            className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02))] backdrop-blur-sm"
-                          />
-                        </div>
+                    <div className="flex flex-col h-fit items-center justify-center space-y-4 flex-1 pd-100">
+                      <div className="flex h-fit w-full max-w rounded-2xl overflow-hidden">
+                        <AspectRatio ratio={4 / 3}>
+                          {expandedUser.profilePic ? (
+                            <img
+                              src={expandedUser.profilePic}
+                              alt={expandedUser.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex items-center justify-center h-full bg-[var(--muted)] text-[var(--muted-foreground)]">
+                              No Image
+                            </div>
+                          )}
+                        </AspectRatio>
                       </div>
+
 
                       <div className="space-y-2">
                         <h3 className="text-lg font-semibold text-[var(--card-foreground)]">
@@ -370,138 +359,79 @@ export default function IssueRequests() {
                         {expandedUser.certifications &&
                           expandedUser.certifications.length > 0 && (
                             <div>
-                              <h4 className="text-sm font-medium text-[var(--card-foreground)]">
+                              <h2 className="text font-medium text-[var(--card-foreground)]">
                                 Certifications
-                              </h4>
-                              <div className="flex flex-wrap gap-2 mt-2">
-                                {expandedUser.certifications.map((c, i) => (
-                                  <span
-                                    key={i}
-                                    className="px-3 py-1 rounded-full bg-[var(--muted)] text-sm text-[var(--muted-foreground)]"
-                                  >
-                                    {c}
-                                  </span>
-                                ))}
-                              </div>
+                              </h2>
+                              <Carousel className="w-full max-w-xl">
+                                <CarouselContent>
+                                  {expandedUser.certifications.map((cert, index) => {
+                                    const isPdf = cert.toLowerCase().endsWith(".pdf")
+
+                                    return (
+                                      <CarouselItem key={index}>
+                                        <div className="p-2 border rounded-lg bg-white flex justify-center items-center">
+                                          {isPdf ? (
+                                            <embed
+                                              src={cert}
+                                              type="application/pdf"
+                                              width="100%"
+                                              height="400px"
+                                              className="rounded-lg border border-gray-300"
+                                            />
+                                          ) : (
+                                            <img
+                                              src={cert}
+                                              alt={`Certification ${index + 1}`}
+                                              className="rounded-lg border border-gray-300 w-full h-[400px] object-contain"
+                                            />
+                                          )}
+                                        </div>
+                                      </CarouselItem>
+                                    )
+                                  })}
+                                </CarouselContent>
+                                <CarouselPrevious />
+                                <CarouselNext />
+                              </Carousel> 
                             </div>
+                            
                           )}
                       </div>
+                      <div className="mt-6 w-fit ">
+                        <h4 className="text-md font-bold text-[var(--card-foreground)]">
+                          Contact & Details
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
+                          <div className="p-3 rounded-lg border border-[var(--border)]/30">
+                            <div className="text-sm text-[var(--muted-foreground)]">
+                              Email
+                            </div>
+                            <div className="font-medium">{expandedUser.email}</div>
+                          </div>
+
+                          <div className="p-3 rounded-lg border border-[var(--border)]/30">
+                            <div className="text-sm text-[var(--muted-foreground)]">
+                              Phone
+                            </div>
+                            <div className="font-medium">{expandedUser.phoneNumber}</div>
+                          </div>
+
+                          <div className="p-3 rounded-lg border border-[var(--border)]/30">
+                            <div className="text-sm text-[var(--muted-foreground)]">
+                              Occupation
+                            </div>
+                            <div className="font-medium">{expandedUser.occupation}</div>
+                          </div>
+                        </div>
+                  </div>
                     </div>
 
                     {/* right: certificates / details carousel */}
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h4 className="text-md font-semibold text-[var(--card-foreground)]">
-                          Certificates & Docs
-                        </h4>
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() =>
-                              setCertIndex((s) =>
-                                Math.max(0, s - 1)
-                              )
-                            }
-                            className="p-2 rounded-md hover:bg-[var(--muted)]"
-                            aria-label="Prev certificate"
-                          >
-                            ◀
-                          </button>
-                          <button
-                            onClick={() =>
-                              setCertIndex((s) =>
-                                Math.min(currentCertificates.length - 1, s + 1)
-                              )
-                            }
-                            className="p-2 rounded-md hover:bg-[var(--muted)]"
-                            aria-label="Next certificate"
-                          >
-                            ▶
-                          </button>
-                        </div>
-                      </div>
-
-                      {currentCertificates.length === 0 ? (
-                        <div className="rounded-lg border border-[var(--border)]/40 p-6 text-center text-[var(--muted-foreground)]">
-                          No certificates uploaded
-                        </div>
-                      ) : (
-                        <div className="rounded-lg border border-[var(--border)]/40 p-2">
-                          {/* Slide area */}
-                          <div className="relative">
-                            <motion.div
-                              key={currentCertificates[certIndex] ?? certIndex}
-                              initial={{ opacity: 0, y: 8 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -8 }}
-                              transition={{ duration: 0.25 }}
-                            >
-                              {isPdf(currentCertificates[certIndex]) ? (
-                                <embed
-                                  src={currentCertificates[certIndex]}
-                                  type="application/pdf"
-                                  width="100%"
-                                  height="400px"
-                                  className="rounded-lg border border-gray-300"
-                                />
-                              ) : (
-                                <img
-                                  src={currentCertificates[certIndex]}
-                                  alt={`Certificate ${certIndex + 1}`}
-                                  className="rounded-lg border border-gray-300 w-full h-[400px] object-contain bg-white"
-                                />
-                              )}
-                            </motion.div>
-                          </div>
-
-                          {currentCertificates.length > 1 && (
-                            <div className="flex items-center justify-center gap-2 mt-3">
-                              {currentCertificates.map((_, idx) => (
-                                <button
-                                  key={idx}
-                                  onClick={() => setCertIndex(idx)}
-                                  className={`w-2 h-2 rounded-full ${
-                                    idx === certIndex
-                                      ? "bg-[var(--primary)]"
-                                      : "bg-[var(--muted)]"
-                                  }`}
-                                  aria-label={`Go to slide ${idx + 1}`}
-                                />
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
                   </div>
 
                   {/* optional: contact / hire / more details */}
-                  <div className="mt-6">
-                    <h4 className="text-md font-semibold text-[var(--card-foreground)]">
-                      Contact & Details
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
-                      <div className="p-3 rounded-lg border border-[var(--border)]/30">
-                        <div className="text-sm text-[var(--muted-foreground)]">
-                          Email
-                        </div>
-                        <div className="font-medium">{expandedUser.email}</div>
-                      </div>
-
-                      <div className="p-3 rounded-lg border border-[var(--border)]/30">
-                        <div className="text-sm text-[var(--muted-foreground)]">
-                          Phone
-                        </div>
-                        <div className="font-medium">{expandedUser.phoneNumber}</div>
-                      </div>
-
-                      <div className="p-3 rounded-lg border border-[var(--border)]/30">
-                        <div className="text-sm text-[var(--muted-foreground)]">
-                          Occupation
-                        </div>
-                        <div className="font-medium">{expandedUser.occupation}</div>
-                      </div>
-                    </div>
-                  </div>
+                  
+                  
                 </div>
               </motion.section>
 
