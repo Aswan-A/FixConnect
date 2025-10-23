@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { PUBLIC_URL } from "config";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "~/components/ui/carousel";
 import { fetchWithAuth } from "~/hooks/fetchWithAuth";
+import { Mail, Phone, User } from "lucide-react";
 
 type User = {
   _id: string;
@@ -74,10 +75,21 @@ export default function UserProfile() {
               className="w-24 h-24 rounded-full object-cover"
             />
           )}
-          <div>
-            <h2 className="text-2xl font-bold">{user.name}</h2>
-            <p className="text-gray-600">{user.email}</p>
-            {user.phoneNumber && <p>Phone: {user.phoneNumber}</p>}
+          <div><div className="flex items-start gap-3">
+                  <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[var(--primary)]/10">
+                    <User className="h-3 w-3 text-[var(--primary)]" />
+                  </div>
+            <h2 className="text-2xl font-bold">{user.name}</h2></div><br />
+            <div className="flex items-start gap-3">
+                  <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[var(--primary)]/10">
+                    <Mail  className="h-3 w-3 text-[var(--primary)]" />
+                  </div>
+            <p className="text-gray-600">{user.email}</p></div><br></br>
+            <div className="flex items-start gap-3">
+                  <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[var(--primary)]/10">
+                    <Phone className="h-3 w-3 text-[var(--primary)]" />
+                  </div>
+            {user.phoneNumber && <p>{user.phoneNumber}</p>}</div>
             {user.isPro && <p className="text-green-600 font-semibold">Pro User</p>}
           </div>
         </div>
@@ -130,6 +142,46 @@ export default function UserProfile() {
           </div>
         )}
       </div>
+        {proUser &&(
+      <div><a href="/pro-register">
+      <input type="button"
+      className="p-2 rounded"
+      style={{
+            backgroundColor: "var(--primary)",
+            color: "var(--primary-foreground)",
+           
+          }} value="Edit Pro" ></input></a></div>)}
+
+       {!proUser &&(
+        
+
+      <div><a href="/pro-register">
+      <button
+      className="p-2 rounded"
+      style={{
+            backgroundColor: "var(--primary)",
+            color: "var(--primary-foreground)",
+           
+          }} value="Make Pro" ></button></a></div>
+          
+          
+          )}
+
+        {!proUser &&(
+        
+
+      <div><a href="/signup">
+      <button
+      className="p-2 rounded"
+      style={{
+            backgroundColor: "var(--primary)",
+            color: "var(--primary-foreground)",
+           
+          }} value="Edit user" ></button></a></div>
+          
+          
+          )}
+        {/* </div> */}
     </div>
   );
 }
