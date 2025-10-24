@@ -5,9 +5,6 @@ import { PUBLIC_URL } from "config.js";
 console.log(import.meta.url);
 import '../app.css';
 
-
-// import your theme
-
 const schema = z.object({
   name: z.string().min(1, "Name is required").max(50, "Name too long"),
   email: z.string().email("Invalid email").min(1, "Email required"),
