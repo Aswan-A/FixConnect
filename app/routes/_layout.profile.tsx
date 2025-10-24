@@ -156,31 +156,18 @@ export default function UserProfile() {
         
 
       <div><a href="/pro-register">
-      <button
+      <input type="button"
       className="p-2 rounded"
       style={{
             backgroundColor: "var(--primary)",
             color: "var(--primary-foreground)",
            
-          }} value="Make Pro" ></button></a></div>
+          }} value="Make Pro" ></input></a></div>
           
           
           )}
 
-        {!proUser &&(
         
-
-      <div><a href="/signup">
-      <button
-      className="p-2 rounded"
-      style={{
-            backgroundColor: "var(--primary)",
-            color: "var(--primary-foreground)",
-           
-          }} value="Edit user" ></button></a></div>
-          
-          
-          )}
         {/* </div> */}
     </div>
   );
