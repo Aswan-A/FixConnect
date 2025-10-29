@@ -9,7 +9,6 @@
 [![Vite](https://img.shields.io/badge/Vite-5.0+-purple.svg)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.0+-cyan.svg)](https://tailwindcss.com/)
 
-[Features](#features) • [Installation](#installation) • [Usage](#usage) • [Screenshots](#screenshots)
 
 </div>
 
@@ -110,7 +109,7 @@ Before you begin, ensure you have:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/fixconnect-frontend.git
+git clone https://github.com/Aswan-A/FixConnect.git
 cd fixconnect-frontend
 ```
 
