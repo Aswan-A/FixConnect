@@ -39,7 +39,6 @@ This is the **frontend application** for FixConnect, built with **React 19**, **
 ## ✨ Features
 
 ### User Experience
-- 🎨 **Light/Dark Theme** - Seamless theme switching with CSS variables
 - 📱 **Fully Responsive** - Mobile-first design using Tailwind CSS
 - 🗺️ **Interactive Maps** - Geolocation-based issue discovery
 - 📸 **Image Upload** - Multiple image support with preview
